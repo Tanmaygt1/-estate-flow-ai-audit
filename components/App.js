@@ -725,6 +725,21 @@ async function exportPDF(reportRef){
   if(typeof window==="undefined" || !reportRef?.current) return;
   try{
     const html2pdf=(await import("html2pdf.js")).default;
+    const source=reportRef.current;
+    const clone=source.cloneNode(true);
+    clone.style.backgroundColor="#07080D";
+    clone.style.color="#F5F2EC";
+    clone.style.width=`${source.offsetWidth}px`;
+    clone.style.margin="0";
+
+    const wrapper=document.createElement("div");
+    wrapper.style.position="absolute";
+    wrapper.style.top="-99999px";
+    wrapper.style.left="-99999px";
+    wrapper.style.width=`${source.offsetWidth}px`;
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
     const options = {
       margin: 0,
       filename: "estate-flow-ai-audit.pdf",
@@ -733,7 +748,9 @@ async function exportPDF(reportRef){
       jsPDF: {unit: "mm", format: "a4", orientation: "portrait"},
       pagebreak: {mode: ["css", "legacy"]},
     };
-    html2pdf().set(options).from(reportRef.current).save();
+
+    await html2pdf().set(options).from(clone).save();
+    document.body.removeChild(wrapper);
   }catch(e){
     window.print();
   }
