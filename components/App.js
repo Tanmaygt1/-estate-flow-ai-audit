@@ -991,18 +991,6 @@ export default function App(){
   const[hasHistory,setHasHistory]=useState(false);
   const[selectedAudit,setSelectedAudit]=useState(null);
 
-  // ── Hydration-safe style injection ──────────────────────────────────────────
-  useEffect(()=>{
-    if(typeof document==="undefined") return;
-    const existing=document.getElementById("ef-styles");
-    if(existing) return;
-    const el=document.createElement("style");
-    el.id="ef-styles";
-    el.textContent=STYLES;
-    document.head.appendChild(el);
-    return()=>{ /* keep styles across nav */ };
-  },[]);
-
   const reg=getRegion(fd?.region||"uk");
   const sym=reg.sym;
   const currency=reg.currency;
@@ -1042,6 +1030,7 @@ export default function App(){
 
   return(
     <>
+      <style id="ef-styles">{STYLES}</style>
       <div className="bg-fixed"/>
       <div className="bg-overlay"/>
       <div className="bg-grain"/>
