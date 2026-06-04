@@ -722,11 +722,21 @@ function OppCard({title,impact,priority,idx}){
 }
 
 async function exportPDF(reportRef){
-  if(typeof window==="undefined") return;
+  if(typeof window==="undefined" || !reportRef?.current) return;
   try{
     const html2pdf=(await import("html2pdf.js")).default;
-    html2pdf().set({margin:0,filename:"estate-flow-ai-audit.pdf",image:{type:"jpeg",quality:0.95},html2canvas:{scale:2,useCORS:true,backgroundColor:"#07080D"},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(reportRef.current).save();
-  }catch(e){window.print();}
+    const options = {
+      margin: 0,
+      filename: "estate-flow-ai-audit.pdf",
+      image: {type: "png", quality: 1},
+      html2canvas: {scale: 3, useCORS: true, backgroundColor: "#07080D"},
+      jsPDF: {unit: "mm", format: "a4", orientation: "portrait"},
+      pagebreak: {mode: ["css", "legacy"]},
+    };
+    html2pdf().set(options).from(reportRef.current).save();
+  }catch(e){
+    window.print();
+  }
 }
 
 // ─── Report ───────────────────────────────────────────────────────────────────
