@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -320,9 +319,9 @@ function Landing({onStart}){
           <span style={{fontSize:12,color:"var(--gold)",fontWeight:600,letterSpacing:"0.08em",textTransform:"uppercase",fontFamily:"var(--sans)"}}>Free · Any Business · Any Country · 3 Min</span>
         </div>
         <h1 className="anim d1" style={{fontSize:"clamp(36px,6vw,72px)",marginBottom:24,color:"var(--t1)"}}>
-          You're getting views.<br/>
+          Every business has blind spots.<br/>
           <span style={{background:"linear-gradient(90deg,var(--gold),var(--gold2))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
-            Are they becoming revenue?
+             Discover yours in minutes.
           </span>
         </h1>
         <p className="anim d2" style={{fontSize:18,color:"var(--t2)",maxWidth:520,margin:"0 auto 44px",lineHeight:1.8}}>
@@ -1064,4 +1063,3 @@ export default function App(){
     </>
   );
 }
-
