@@ -147,7 +147,7 @@ hr.div{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:22px 0;}
 .spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--gold);animation:spin .7s linear infinite;flex-shrink:0;}
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(4,5,10,0.82);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;padding:0 28px;height:62px;}
 .nav-logo{display:flex;align-items:center;gap:10px;}
-.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#C8A96E,#E8C98E);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#04050A;font-family:var(--sans);box-shadow:0 0 0 1px rgba(200,169,110,0.35),0 0 14px rgba(200,169,110,0.18);}
+.site-logo{width:42px;height:42px;display:block;border-radius:16px;object-fit:contain;}
 .nav-logo-text{font-size:16px;font-weight:700;color:var(--t1);font-family:var(--sans);letter-spacing:-0.02em;}
 .nav-logo-text span{color:var(--gold);}
 .progress-bar-track{height:2px;background:rgba(255,255,255,0.05);position:relative;overflow:hidden;}
@@ -212,7 +212,7 @@ function Nav({user,onSignOut,onShowHistory,hasHistory}){
   return(
     <nav className="nav">
       <div className="nav-logo">
-        <div className="nav-logo-mark">EF</div>
+        <img src="/logo.svg" alt="Estate Flow AI" className="site-logo" />
         <span className="nav-logo-text">Estate Flow<span> AI</span></span>
       </div>
       <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:12}}>
@@ -727,6 +727,22 @@ async function exportPDF(reportRef){
     const html2pdf=(await import("html2pdf.js")).default;
     const source=reportRef.current;
     const clone=source.cloneNode(true);
+    const exportStyle=document.createElement("style");
+    exportStyle.textContent=`
+      *{box-shadow:none!important;filter:none!important;backdrop-filter:none!important;text-shadow:none!important;}
+      html,body,#export-pdf-root{background:#07080D!important;color:#F5F2EC!important;}
+      .card,.card-accent,.card-glow,.card-obsidian,.nav,.history-card,.pdf-btn,.btn,.bar-track,.step-dot,.step-line{background:#11131d!important;border-color:rgba(255,255,255,0.08)!important;}
+      .card-obsidian{background:#090b14!important;}
+      .bar-fill.red{background:#ef4444!important;}
+      .bar-fill.yellow{background:#f59e0b!important;}
+      .bar-fill.green{background:#10B981!important;}
+      h1,h2,h3,h4,p,span,div,button,label,li{color:#F5F2EC!important;}
+      svg,path,line,rect,circle,text{stroke:#F5F2EC!important;fill:none!important;}
+      .nav-logo-text{color:#F5F2EC!important;}
+      .nav-logo-text span{color:#E8D99E!important;}
+    `;
+    clone.id="export-pdf-root";
+    clone.prepend(exportStyle);
     clone.style.backgroundColor="#07080D";
     clone.style.color="#F5F2EC";
     clone.style.width=`${source.offsetWidth}px`;
@@ -744,8 +760,8 @@ async function exportPDF(reportRef){
       margin: 0,
       filename: "estate-flow-ai-audit.pdf",
       image: {type: "png", quality: 1},
-      html2canvas: {scale: 3, useCORS: true, backgroundColor: "#07080D"},
-      jsPDF: {unit: "mm", format: "a4", orientation: "portrait"},
+      html2canvas: {scale: 3, useCORS: true, backgroundColor: "#07080D", scrollX: 0, scrollY: 0, windowWidth: source.scrollWidth, windowHeight: source.scrollHeight},
+      jsPDF: {unit: "mm", format: "a4", orientation: "portrait", compress: true},
       pagebreak: {mode: ["css", "legacy"]},
     };
 
@@ -1007,6 +1023,7 @@ export default function App(){
   const[pendingFd,setPendingFd]=useState(null);
   const[hasHistory,setHasHistory]=useState(false);
   const[selectedAudit,setSelectedAudit]=useState(null);
+  const historyReportRef=useRef(null);
 
   const reg=getRegion(fd?.region||"uk");
   const sym=reg.sym;
@@ -1059,10 +1076,16 @@ export default function App(){
       {screen==="report"    && fd && <Report fd={fd} lead={lead} onRestart={restart} fmt={fmt} sym={sym} currency={currency} user={user}/>}
       {screen==="history"   && <HistoryScreen user={user} onSelect={handleSelectAudit} onBack={()=>setScreen(fd?"report":"landing")}/>}
       {screen==="history-report" && selectedAudit && (
-        <div style={{minHeight:"100vh",padding:"90px 20px 60px",maxWidth:820,margin:"0 auto",position:"relative",zIndex:1}}>
-          <button className="btn bo" style={{fontSize:12,padding:"7px 14px",marginBottom:28,gap:6}} onClick={()=>setScreen("history")}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to History
-          </button>
+        <div ref={historyReportRef} style={{minHeight:"100vh",padding:"90px 20px 60px",maxWidth:820,margin:"0 auto",position:"relative",zIndex:1}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:24}}>
+            <button className="btn bo" style={{fontSize:12,padding:"7px 14px",gap:6}} onClick={()=>setScreen("history")}> 
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to History
+            </button>
+            <button className="pdf-btn" onClick={()=>exportPDF(historyReportRef)}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export PDF
+            </button>
+          </div>
           <p style={{fontSize:10,fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase",color:"var(--gold)",marginBottom:8,fontFamily:"var(--sans)"}}>Past Audit · {new Date(selectedAudit.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}</p>
           <h1 style={{fontSize:"clamp(22px,3.5vw,32px)",color:"var(--t1)",marginBottom:24}}>{INDUSTRY_LABELS[selectedAudit.industry]||"Business"} Audit Report</h1>
           <div className="card-glow" style={{display:"flex",gap:24,alignItems:"center",marginBottom:16,flexWrap:"wrap"}}>
