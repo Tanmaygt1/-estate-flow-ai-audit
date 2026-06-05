@@ -147,7 +147,7 @@ hr.div{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:22px 0;}
 .spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--gold);animation:spin .7s linear infinite;flex-shrink:0;}
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(4,5,10,0.82);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;padding:0 28px;height:62px;}
 .nav-logo{display:flex;align-items:center;gap:10px;}
-.site-logo{width:42px;height:42px;display:block;border-radius:16px;object-fit:contain;}
+.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#C8A96E,#E8C98E);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#04050A;font-family:var(--sans);box-shadow:0 0 0 1px rgba(200,169,110,0.35),0 0 14px rgba(200,169,110,0.18);}
 .nav-logo-text{font-size:16px;font-weight:700;color:var(--t1);font-family:var(--sans);letter-spacing:-0.02em;}
 .nav-logo-text span{color:var(--gold);}
 .progress-bar-track{height:2px;background:rgba(255,255,255,0.05);position:relative;overflow:hidden;}
@@ -212,7 +212,7 @@ function Nav({user,onSignOut,onShowHistory,hasHistory}){
   return(
     <nav className="nav">
       <div className="nav-logo">
-        <img src="/logo.svg" alt="Estate Flow AI" className="site-logo" />
+        <div className="nav-logo-mark" style={{fontFamily:"Georgia,serif",fontStyle:"italic",fontSize:13,letterSpacing:"-0.04em"}}>EF</div>
         <span className="nav-logo-text">Estate Flow<span> AI</span></span>
       </div>
       <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:12}}>
@@ -316,16 +316,16 @@ function Landing({onStart}){
       <div style={{maxWidth:680,textAlign:"center",position:"relative",zIndex:1}}>
         <div className="anim" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(200,169,110,0.08)",border:"1px solid rgba(200,169,110,0.22)",borderRadius:100,padding:"6px 18px",marginBottom:36}}>
           <span style={{width:6,height:6,borderRadius:"50%",background:"var(--gold)",animation:"pulse 2s infinite",display:"inline-block"}}/>
-          <span style={{fontSize:12,color:"var(--gold)",fontWeight:600,letterSpacing:"0.08em",textTransform:"uppercase",fontFamily:"var(--sans)"}}>Free · Any Business · Any Country · 3 Min</span>
+          <span style={{fontSize:12,color:"var(--gold)",fontWeight:600,letterSpacing:"0.08em",textTransform:"uppercase",fontFamily:"var(--sans)"}}>Free · Any Business · Any Country · 3 Minutes</span>
         </div>
         <h1 className="anim d1" style={{fontSize:"clamp(36px,6vw,72px)",marginBottom:24,color:"var(--t1)"}}>
           Every business has blind spots.<br/>
           <span style={{background:"linear-gradient(90deg,var(--gold),var(--gold2))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
-             Discover yours in minutes.
+            Discover yours in minutes.
           </span>
         </h1>
         <p className="anim d2" style={{fontSize:18,color:"var(--t2)",maxWidth:520,margin:"0 auto 44px",lineHeight:1.8}}>
-          Most businesses lose 40–60% of interested leads to slow responses, zero follow-up, and manual operations. Estate Flow AI finds exactly where — in 3 minutes.
+          Most businesses lose 40–60% of interested leads to slow responses, zero follow-up, and manual operations. Estate Flow AI diagnoses exactly where — and tells you how to fix it.
         </p>
         <div className="anim d3" style={{display:"flex",flexDirection:"column",alignItems:"center",gap:14}}>
           <button className="btn bcta" onClick={onStart} style={{fontSize:17,padding:"17px 48px"}}>
@@ -670,7 +670,7 @@ function RiskMeter({score}){
           <path d={arc(-60,0,r)} fill="none" stroke="rgba(16,185,129,0.18)" strokeWidth="10" strokeLinecap="round"/>
           <path d={arc(-180,Math.min(fillEnd,-0.1),r)} fill="none" stroke={col} strokeWidth="10" strokeLinecap="round" style={{filter:`drop-shadow(0 0 6px ${col}88)`,transition:"all 1.4s cubic-bezier(0.16,1,0.3,1)"}}/>
           <g transform={`translate(${cx},${cy})`}>
-            <g transform={`rotate(${-180+(score/100)*180})`} style={{transition:"transform 1.4s cubic-bezier(0.16,1,0.3,1)"}}>
+            <g transform={`rotate(${-90+(score/100)*180})`} style={{transition:"transform 1.4s cubic-bezier(0.16,1,0.3,1)"}}>
               <line x1="0" y1="0" x2={r-16} y2="0" stroke={col} strokeWidth="2.5" strokeLinecap="round" style={{filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.6))"}}/>
               <circle cx="0" cy="0" r="5" fill={col} style={{filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.5))"}}/>
             </g>
@@ -721,53 +721,23 @@ function OppCard({title,impact,priority,idx}){
   );
 }
 
-async function exportPDF(reportRef){
-  if(typeof window==="undefined" || !reportRef?.current) return;
+async function exportPDF({lead, formData, aiReport, score, currency, sym, createdAt}){
+  if(typeof window==="undefined") return;
   try{
-    const html2pdf=(await import("html2pdf.js")).default;
-    const source=reportRef.current;
-    const clone=source.cloneNode(true);
-    const exportStyle=document.createElement("style");
-    exportStyle.textContent=`
-      *{box-shadow:none!important;filter:none!important;backdrop-filter:none!important;text-shadow:none!important;}
-      html,body,#export-pdf-root{background:#07080D!important;color:#F5F2EC!important;}
-      .card,.card-accent,.card-glow,.card-obsidian,.nav,.history-card,.pdf-btn,.btn,.bar-track,.step-dot,.step-line{background:#11131d!important;border-color:rgba(255,255,255,0.08)!important;}
-      .card-obsidian{background:#090b14!important;}
-      .bar-fill.red{background:#ef4444!important;}
-      .bar-fill.yellow{background:#f59e0b!important;}
-      .bar-fill.green{background:#10B981!important;}
-      h1,h2,h3,h4,p,span,div,button,label,li{color:#F5F2EC!important;}
-      svg,path,line,rect,circle,text{stroke:#F5F2EC!important;fill:none!important;}
-      .nav-logo-text{color:#F5F2EC!important;}
-      .nav-logo-text span{color:#E8D99E!important;}
-    `;
-    clone.id="export-pdf-root";
-    clone.prepend(exportStyle);
-    clone.style.backgroundColor="#07080D";
-    clone.style.color="#F5F2EC";
-    clone.style.width=`${source.offsetWidth}px`;
-    clone.style.margin="0";
-
-    const wrapper=document.createElement("div");
-    wrapper.style.position="absolute";
-    wrapper.style.top="-99999px";
-    wrapper.style.left="-99999px";
-    wrapper.style.width=`${source.offsetWidth}px`;
-    wrapper.appendChild(clone);
-    document.body.appendChild(wrapper);
-
-    const options = {
-      margin: 0,
-      filename: "estate-flow-ai-audit.pdf",
-      image: {type: "png", quality: 1},
-      html2canvas: {scale: 3, useCORS: true, backgroundColor: "#07080D", scrollX: 0, scrollY: 0, windowWidth: source.scrollWidth, windowHeight: source.scrollHeight},
-      jsPDF: {unit: "mm", format: "a4", orientation: "portrait", compress: true},
-      pagebreak: {mode: ["css", "legacy"]},
-    };
-
-    await html2pdf().set(options).from(clone).save();
-    document.body.removeChild(wrapper);
+    const res = await fetch("/api/generate-pdf", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({lead, formData, aiReport, score, currency, sym, createdAt}),
+    });
+    if(!res.ok) throw new Error("PDF generation failed");
+    const html = await res.text();
+    const win = window.open("","_blank");
+    if(!win){ alert("Please allow pop-ups to export your PDF."); return; }
+    win.document.write(html);
+    win.document.close();
+    setTimeout(()=>{ win.focus(); win.print(); }, 800);
   }catch(e){
+    console.error("PDF export error:", e);
     window.print();
   }
 }
@@ -838,7 +808,7 @@ Write exactly 4 punchy paragraphs: (1) Biggest revenue leak with exact ${currenc
           <p style={{color:"var(--t2)",fontSize:14,fontFamily:"var(--sans)",letterSpacing:"0.01em"}}><strong style={{color:"var(--t1)"}}>{bizLabel}</strong> · {fd.teamSize} team · {reg.sym}{fd.revTier} · {reg.label}</p>
         </div>
         <div style={{display:"flex",gap:8,flexShrink:0,marginTop:4}}>
-          <button className="pdf-btn" onClick={()=>exportPDF(reportRef)}>
+          <button className="pdf-btn" onClick={()=>exportPDF({lead,formData:fd,aiReport:aiTxt,score:m.score,currency,sym,createdAt:new Date().toISOString()})}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Export PDF
           </button>
@@ -1023,7 +993,18 @@ export default function App(){
   const[pendingFd,setPendingFd]=useState(null);
   const[hasHistory,setHasHistory]=useState(false);
   const[selectedAudit,setSelectedAudit]=useState(null);
-  const historyReportRef=useRef(null);
+
+  // ── Hydration-safe style injection ──────────────────────────────────────────
+  useEffect(()=>{
+    if(typeof document==="undefined") return;
+    const existing=document.getElementById("ef-styles");
+    if(existing) return;
+    const el=document.createElement("style");
+    el.id="ef-styles";
+    el.textContent=STYLES;
+    document.head.appendChild(el);
+    return()=>{ /* keep styles across nav */ };
+  },[]);
 
   const reg=getRegion(fd?.region||"uk");
   const sym=reg.sym;
@@ -1064,7 +1045,6 @@ export default function App(){
 
   return(
     <>
-      <style id="ef-styles">{STYLES}</style>
       <div className="bg-fixed"/>
       <div className="bg-overlay"/>
       <div className="bg-grain"/>
@@ -1076,12 +1056,12 @@ export default function App(){
       {screen==="report"    && fd && <Report fd={fd} lead={lead} onRestart={restart} fmt={fmt} sym={sym} currency={currency} user={user}/>}
       {screen==="history"   && <HistoryScreen user={user} onSelect={handleSelectAudit} onBack={()=>setScreen(fd?"report":"landing")}/>}
       {screen==="history-report" && selectedAudit && (
-        <div ref={historyReportRef} style={{minHeight:"100vh",padding:"90px 20px 60px",maxWidth:820,margin:"0 auto",position:"relative",zIndex:1}}>
-          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:24}}>
-            <button className="btn bo" style={{fontSize:12,padding:"7px 14px",gap:6}} onClick={()=>setScreen("history")}> 
+        <div style={{minHeight:"100vh",padding:"90px 20px 60px",maxWidth:820,margin:"0 auto",position:"relative",zIndex:1}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:28}}>
+            <button className="btn bo" style={{fontSize:12,padding:"7px 14px",gap:6}} onClick={()=>setScreen("history")}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back to History
             </button>
-            <button className="pdf-btn" onClick={()=>exportPDF(historyReportRef)}>
+            <button className="pdf-btn" onClick={()=>exportPDF({lead:lead||{},formData:{industry:selectedAudit.industry,teamSize:selectedAudit.team_size,revTier:selectedAudit.revenue_tier,region:selectedAudit.region,responseSpeed:selectedAudit.response_speed,adminHours:selectedAudit.admin_hours,noShowImpact:selectedAudit.no_show_impact,outOfHours:"next-day",followUpMethod:[],losesLeads:"yes",appointmentBooking:"manual-appt",repetitiveQuestions:"yes-faq",repeatQuestions:"yes-repeat",cxOutOfHours:"no-cx-oos",usedAI:"no-ai"},aiReport:selectedAudit.ai_report||"",score:selectedAudit.ai_score||50,currency:selectedAudit.currency||"GBP",sym:"£",createdAt:selectedAudit.created_at})}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Export PDF
             </button>
