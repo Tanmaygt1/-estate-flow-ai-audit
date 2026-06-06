@@ -83,7 +83,7 @@ function buildPDFHTML({ lead, formData, aiReport, score, currency, sym, createdA
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Plus Jakarta Sans',sans-serif;background:#FAFAF8;color:#1a1a2e;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.6;}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:#07080D;color:#F5F2EC;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.6;}
   .page{max-width:794px;margin:0 auto;padding:0;}
 
   /* Header */
@@ -104,50 +104,50 @@ function buildPDFHTML({ lead, formData, aiReport, score, currency, sym, createdA
   .audit-meta strong{color:#F5F2EC;}
 
   /* Content */
-  .content{background:#FAFAF8;padding:40px 48px;}
+  .content{background:#07080D;padding:40px 48px;}
 
   /* Score section */
-  .score-section{background:#fff;border:1px solid #E8E4DC;border-radius:14px;padding:32px;margin-bottom:24px;display:flex;gap:32px;align-items:center;}
+  .score-section{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:32px;margin-bottom:24px;display:flex;gap:32px;align-items:center;}
   .score-gauge{text-align:center;flex-shrink:0;}
-  .score-circle{width:100px;height:100px;border-radius:50%;border:6px solid #E8E4DC;display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto 10px;}
+  .score-circle{width:100px;height:100px;border-radius:50%;border:6px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto 10px;}
   .score-num{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;color:${scoreColor};}
   .score-denom{font-size:12px;color:#9A9282;}
   .score-badge{display:inline-block;padding:4px 14px;border-radius:100px;font-size:11px;font-weight:700;background:${scoreColor}18;color:${scoreColor};border:1px solid ${scoreColor}35;}
   .score-info{}
   .score-info-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#9A9282;margin-bottom:8px;}
-  .score-info-heading{font-size:18px;font-weight:800;color:#1a1a2e;letter-spacing:-0.015em;margin-bottom:10px;line-height:1.3;}
-  .score-info-body{font-size:13px;color:#6B6560;line-height:1.75;}
-  .score-info-body strong{color:#1a1a2e;}
+  .score-info-heading{font-size:18px;font-weight:800;color:#F5F2EC;letter-spacing:-0.015em;margin-bottom:10px;line-height:1.3;}
+  .score-info-body{font-size:13px;color:#9A9282;line-height:1.75;}
+  .score-info-body strong{color:#F5F2EC;}
 
   /* Section header */
   .section-header{margin:32px 0 16px;}
   .section-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#C8A96E;margin-bottom:6px;}
-  .section-title{font-size:16px;font-weight:800;color:#1a1a2e;letter-spacing:-0.015em;}
+  .section-title{font-size:16px;font-weight:800;color:#F5F2EC;letter-spacing:-0.015em;}
 
   /* Stats grid */
   .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
-  .stat-card{background:#fff;border:1px solid #E8E4DC;border-radius:10px;padding:20px;}
+  .stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:20px;}
   .stat-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9A9282;margin-bottom:6px;}
   .stat-value{font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
-  .stat-sub{font-size:11px;color:#9A9282;line-height:1.5;}
+  .stat-sub{font-size:11px;color:#4A4438;line-height:1.5;}
   .val-red{color:#ef4444;}
   .val-yellow{color:#f59e0b;}
   .val-green{color:#10b981;}
 
   /* Operations */
   .ops-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
-  .ops-card{background:#fff;border:1px solid #E8E4DC;border-radius:10px;padding:18px;}
-  .ops-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9A9282;margin-bottom:5px;}
+  .ops-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:18px;}
+  .ops-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#4A4438;margin-bottom:5px;}
   .ops-value{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;}
 
   /* Bar */
   .bar-row{margin-bottom:16px;}
   .bar-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
-  .bar-label{font-size:13px;color:#6B6560;}
+  .bar-label{font-size:13px;color:#9A9282;}
   .bar-val{font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:600;}
-  .bar-track{height:5px;background:#F0EDE8;border-radius:4px;overflow:hidden;}
+  .bar-track{height:5px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
   .bar-fill{height:100%;border-radius:4px;}
-  .bar-note{font-size:11px;color:#9A9282;margin-top:4px;line-height:1.5;}
+  .bar-note{font-size:11px;color:#4A4438;margin-top:4px;line-height:1.5;}
 
   /* AI Analysis */
   .ai-section{background:#07080D;border-radius:14px;padding:32px;margin-bottom:24px;}
@@ -158,20 +158,20 @@ function buildPDFHTML({ lead, formData, aiReport, score, currency, sym, createdA
   .ai-body{font-size:13px;color:#9A9282;line-height:1.9;white-space:pre-wrap;}
 
   /* Opportunities */
-  .opp-card{background:#fff;border:1px solid #E8E4DC;border-radius:10px;padding:18px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
+  .opp-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:18px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
   .opp-badge{padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px;}
   .badge-critical{background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);}
   .badge-high{background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);}
   .badge-medium{background:rgba(200,169,110,0.1);color:#C8A96E;border:1px solid rgba(200,169,110,0.2);}
-  .opp-title{font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:5px;}
-  .opp-body{font-size:12px;color:#6B6560;line-height:1.65;}
+  .opp-title{font-size:13px;font-weight:700;color:#F5F2EC;margin-bottom:5px;}
+  .opp-body{font-size:12px;color:#9A9282;line-height:1.65;}
 
   /* Growth potential */
-  .growth-section{background:linear-gradient(135deg,rgba(200,169,110,0.06),rgba(200,169,110,0.02));border:1px solid rgba(200,169,110,0.2);border-radius:14px;padding:28px;margin-bottom:24px;}
+  .growth-section{background:linear-gradient(135deg,rgba(200,169,110,0.1),rgba(200,169,110,0.04));border:1px solid rgba(200,169,110,0.25);border-radius:14px;padding:28px;margin-bottom:24px;}
   .growth-num{font-size:40px;font-weight:800;color:#10b981;font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
   .growth-label{font-size:13px;color:#9A9282;margin-bottom:12px;}
-  .growth-body{font-size:13px;color:#6B6560;line-height:1.8;}
-  .growth-body strong{color:#1a1a2e;}
+  .growth-body{font-size:13px;color:#9A9282;line-height:1.8;}
+  .growth-body strong{color:#F5F2EC;}
 
   /* CTA */
   .cta-section{background:#07080D;border-radius:14px;padding:40px 32px;text-align:center;border:1px solid rgba(200,169,110,0.25);}
@@ -188,10 +188,11 @@ function buildPDFHTML({ lead, formData, aiReport, score, currency, sym, createdA
   .footer-page{font-size:11px;color:#4A4438;font-family:'JetBrains Mono',monospace;}
 
   /* Divider */
-  .divider{height:1px;background:#E8E4DC;margin:24px 0;}
+  .divider{height:1px;background:rgba(255,255,255,0.08);margin:24px 0;}
 
   @media print{
-    body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#07080D !important;}
+    .header,.title-section,.content,.footer{background-color:inherit !important;}
   }
 </style>
 </head>
@@ -292,7 +293,7 @@ function buildPDFHTML({ lead, formData, aiReport, score, currency, sym, createdA
       </div>
     </div>
 
-    <div style="background:#fff;border:1px solid #E8E4DC;border-radius:10px;padding:20px;margin-bottom:24px;">
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:20px;margin-bottom:24px;">
       <div class="bar-row">
         <div class="bar-header">
           <span class="bar-label">Lead response speed</span>

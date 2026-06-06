@@ -670,7 +670,7 @@ function RiskMeter({score}){
           <path d={arc(-60,0,r)} fill="none" stroke="rgba(16,185,129,0.18)" strokeWidth="10" strokeLinecap="round"/>
           <path d={arc(-180,Math.min(fillEnd,-0.1),r)} fill="none" stroke={col} strokeWidth="10" strokeLinecap="round" style={{filter:`drop-shadow(0 0 6px ${col}88)`,transition:"all 1.4s cubic-bezier(0.16,1,0.3,1)"}}/>
           <g transform={`translate(${cx},${cy})`}>
-            <g transform={`rotate(${-180+(score/100)*180})`} style={{transition:"transform 1.4s cubic-bezier(0.16,1,0.3,1)"}}>
+            <g transform={`rotate(${-90+(score/100)*180})`} style={{transition:"transform 1.4s cubic-bezier(0.16,1,0.3,1)"}}>
               <line x1="0" y1="0" x2={r-16} y2="0" stroke={col} strokeWidth="2.5" strokeLinecap="round" style={{filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.6))"}}/>
               <circle cx="0" cy="0" r="5" fill={col} style={{filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.5))"}}/>
             </g>
