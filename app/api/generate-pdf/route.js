@@ -58,10 +58,21 @@ function calcScore(d){
   return { score, weeklyAdminHrs, monthlyAdminHrs, adminWasteCost, conversionLoss, afterHoursMiss, followUpLoss, noShowCost, totalMonthlyLeak, totalAnnualLeak: totalMonthlyLeak*12, followUp };
 }
 
-function fmt(n, sym) {
+const CURRENCY_SYMBOLS = {
+  GBP:"£", USD:"$", EUR:"€", INR:"₹", AED:"AED ", AUD:"A$", CAD:"C$", SGD:"S$",
+  CHF:"CHF ", JPY:"¥", NZD:"NZ$", SEK:"kr", NOK:"kr", DKK:"kr", ZAR:"R", HKD:"HK$",
+};
+
+function resolveCurrencySymbol(currency, sym) {
+  if (typeof sym === "string" && sym.trim()) return sym.trim();
+  const code = String(currency || "").toUpperCase();
+  return CURRENCY_SYMBOLS[code] || code || "£";
+}
+
+function fmt(n, sym, currency) {
   const v = Math.round(Number(n));
-  const s = sym || "£";
-  if(s === "₹") return "₹" + v.toLocaleString("en-IN");
+  const s = resolveCurrencySymbol(currency, sym);
+  if (s === "₹") return "₹" + v.toLocaleString("en-IN");
   return s + v.toLocaleString("en-GB");
 }
 
@@ -86,8 +97,8 @@ function buildPDFHTML({ lead, formData, aiReport, score, currency, sym, createdA
   const bizLabel = INDUSTRY_LABELS[fd.industry] || "Business";
   const regionLabel = REGION_LABELS[fd.region] || fd.region || "—";
   const date = new Date(createdAt || Date.now()).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
-  const s = sym || "£";
-  const f = (n) => fmt(n, s);
+  const s = resolveCurrencySymbol(currency, sym);
+  const f = (n) => fmt(n, s, currency);
   const scoreColor = score >= 68 ? "#16A34A" : score >= 42 ? "#D97706" : "#DC2626";
   const scoreBg = score >= 68 ? "#F0FDF4" : score >= 42 ? "#FFFBEB" : "#FEF2F2";
   const scoreLabel = score >= 68 ? "Moderate" : score >= 42 ? "At Risk" : "Critical";
@@ -135,15 +146,15 @@ html,body{width:100%;background:#FFFFFF;color:#1A1A1A;font-family:'Plus Jakarta 
 /* ── Layout ── */
 .page{max-width:794px;margin:0 auto;background:#FFFFFF;}
 
-/* ── Header bar (dark, prints correctly) ── */
-.header{background:#0D0F1A;padding:24px 40px;display:flex;align-items:center;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+/* ── Header bar (light luxury) ── */
+.header{background:#FFFFFF;padding:24px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #C8A96E;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .header-logo{display:flex;align-items:center;gap:10px;}
-.logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#C8A96E,#E8C98E);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#04050A;font-family:Georgia,serif;font-style:italic;letter-spacing:-0.04em;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.logo-name{font-size:16px;font-weight:700;color:#F5F2EC;letter-spacing:-0.02em;}
+.logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#C8A96E,#E8C98E);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#1A1A1A;font-family:Georgia,serif;font-style:italic;letter-spacing:-0.04em;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.logo-name{font-size:16px;font-weight:700;color:#1A1A1A;letter-spacing:-0.02em;}
 .logo-name span{color:#C8A96E;}
 .header-right{text-align:right;}
-.header-label{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#C8A96E;}
-.header-date{font-size:12px;color:#9A9282;margin-top:2px;}
+.header-label{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#8B6914;}
+.header-date{font-size:12px;color:#6B7280;margin-top:2px;}
 
 /* ── Title band ── */
 .title-band{background:#F8F6F2;border-bottom:3px solid #C8A96E;padding:28px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
@@ -200,12 +211,12 @@ html,body{width:100%;background:#FFFFFF;color:#1A1A1A;font-family:'Plus Jakarta 
 .bar-note{font-size:11px;color:#6B7280;margin-top:4px;line-height:1.5;}
 
 /* ── AI Analysis ── */
-.ai-card{background:#0D0F1A;border-radius:12px;padding:28px;margin-bottom:24px;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.ai-card{background:#F8F6F0;border:1.5px solid #E8DCC8;border-left:4px solid #C8A96E;border-radius:12px;padding:28px;margin-bottom:24px;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .ai-header{display:flex;gap:10px;align-items:center;margin-bottom:14px;}
-.ai-icon{width:34px;height:34px;border-radius:8px;background:rgba(200,169,110,0.18);border:1px solid rgba(200,169,110,0.3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.ai-title-text{font-size:14px;font-weight:700;color:#F5F2EC;}
-.ai-subtitle{font-size:11px;color:#9A9282;}
-.ai-body{font-size:13px;color:#C8C4BC;line-height:1.9;white-space:pre-wrap;}
+.ai-icon{width:34px;height:34px;border-radius:8px;background:#EFE5D0;border:1px solid #C8A96E;display:flex;align-items:center;justify-content:center;font-size:15px;color:#8B6914;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.ai-title-text{font-size:14px;font-weight:700;color:#1A1A1A;}
+.ai-subtitle{font-size:11px;color:#6B7280;}
+.ai-body{font-size:13px;color:#374151;line-height:1.9;white-space:pre-wrap;}
 
 /* ── Opportunity cards ── */
 .opp-card{border:1.5px solid;border-radius:10px;padding:16px 18px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;background:#FFFFFF;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
@@ -221,18 +232,18 @@ html,body{width:100%;background:#FFFFFF;color:#1A1A1A;font-family:'Plus Jakarta 
 .growth-body strong{color:#1A1A1A;}
 
 /* ── CTA block ── */
-.cta-card{background:#0D0F1A;border-radius:14px;padding:36px 32px;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.cta-overline{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#C8A96E;margin-bottom:14px;}
-.cta-heading{font-size:22px;font-weight:800;color:#F5F2EC;letter-spacing:-0.02em;margin-bottom:10px;line-height:1.3;}
-.cta-body{font-size:13px;color:rgba(250,248,244,0.55);margin-bottom:20px;line-height:1.75;}
-.cta-url{display:inline-block;padding:13px 32px;border-radius:9px;background:linear-gradient(135deg,#C8A96E,#E8C98E);color:#04050A;font-weight:800;font-size:14px;text-decoration:none;letter-spacing:0.01em;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.cta-card{background:#FFFBF0;border:2px solid #C8A96E;border-radius:14px;padding:36px 32px;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.cta-overline{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#8B6914;margin-bottom:14px;}
+.cta-heading{font-size:22px;font-weight:800;color:#1A1A1A;letter-spacing:-0.02em;margin-bottom:10px;line-height:1.3;}
+.cta-body{font-size:13px;color:#4A4A5A;margin-bottom:20px;line-height:1.75;}
+.cta-url{display:inline-block;padding:13px 24px;border-radius:999px;background:#C8A96E;color:#FFFFFF;font-weight:800;font-size:14px;text-decoration:none;letter-spacing:0.01em;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .cta-trust{display:flex;justify-content:center;gap:18px;margin-top:14px;flex-wrap:wrap;}
-.cta-trust span{font-size:10px;color:rgba(200,169,110,0.5);}
+.cta-trust span{font-size:10px;color:#8B6914;}
 
 /* ── Footer ── */
-.footer{background:#F8F6F2;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #E5E7EB;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.footer-text{font-size:10px;color:#9CA3AF;}
-.footer-mono{font-size:10px;color:#9CA3AF;font-family:'JetBrains Mono',monospace;}
+.footer{background:#FFFFFF;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;border-top:2px solid #C8A96E;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.footer-text{font-size:10px;color:#6B7280;}
+.footer-mono{font-size:10px;color:#6B7280;font-family:'JetBrains Mono',monospace;}
 
 /* ── Divider ── */
 .divider{height:1px;background:#F3F4F6;margin:24px 0;}
@@ -242,7 +253,6 @@ html,body{width:100%;background:#FFFFFF;color:#1A1A1A;font-family:'Plus Jakarta 
   *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
   html,body{background:#FFFFFF !important;}
   .page{max-width:100%;margin:0;}
-  .header,.title-band,.ai-card,.cta-card,.footer,.growth-card{background-color:inherit !important;}
   .score-card,.metric-card,.ops-card,.bars-card,.opp-card{page-break-inside:avoid;}
   @page{margin:0;size:A4;}
 }
@@ -419,7 +429,7 @@ html,body{width:100%;background:#FFFFFF;color:#1A1A1A;font-family:'Plus Jakarta 
     <div class="cta-overline">Exclusive Strategy Session</div>
     <div class="cta-heading">Ready to recover ${f(m.totalMonthlyLeak)}/month?</div>
     <div class="cta-body">Book a free 30-minute strategy call. Our team will walk through exactly how to implement these AI systems for your ${bizLabel} business — with a clear 30-day deployment plan.</div>
-    <a href="https://calendly.com/charanrathod-inf/30min" class="cta-url">Book Your Free Strategy Call →</a>
+    <a href="https://calendly.com/charanrathod-inf/30min" class="cta-url" style="background:#C8A96E;color:#FFFFFF;border-radius:999px;display:inline-block;padding:13px 24px;text-decoration:none;font-weight:800;">Book Your Free Strategy Call →</a>
     <div class="cta-trust">
       <span>📅 30-Min Confidential Session</span>
       <span>🔒 100% Secure &amp; Private</span>
