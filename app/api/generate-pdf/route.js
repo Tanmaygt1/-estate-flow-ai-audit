@@ -3,6 +3,12 @@
 // Light theme designed for maximum readability when printed
 
 import { NextResponse } from "next/server";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+const LOGO_DATA_URI = `data:image/png;base64,${readFileSync(
+  join(process.cwd(), "public", "estate-flow-logo.png")
+).toString("base64")}`;
 
 const INDUSTRY_LABELS = {
   "real-estate-sales":"Real Estate","real-estate-dev":"Real Estate Development",
@@ -149,7 +155,7 @@ html,body{width:100%;background:#FFFFFF;color:#1A1A1A;font-family:'Plus Jakarta 
 /* ── Header bar (light luxury) ── */
 .header{background:#FFFFFF;padding:24px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #C8A96E;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .header-logo{display:flex;align-items:center;gap:10px;}
-.logo-mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#C8A96E,#E8C98E);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#1A1A1A;font-family:Georgia,serif;font-style:italic;letter-spacing:-0.04em;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.logo-mark{width:48px;height:36px;object-fit:contain;display:block;}
 .logo-name{font-size:16px;font-weight:700;color:#1A1A1A;letter-spacing:-0.02em;}
 .logo-name span{color:#C8A96E;}
 .header-right{text-align:right;}
@@ -264,7 +270,7 @@ html,body{width:100%;background:#FFFFFF;color:#1A1A1A;font-family:'Plus Jakarta 
 <!-- HEADER -->
 <div class="header">
   <div class="header-logo">
-    <div class="logo-mark">EF</div>
+    <img class="logo-mark" src="${LOGO_DATA_URI}" alt="Estate Flow"/>
     <span class="logo-name">Estate Flow<span> AI</span></span>
   </div>
   <div class="header-right">

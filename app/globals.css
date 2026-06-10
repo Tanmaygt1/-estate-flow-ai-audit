@@ -1,1 +1,11 @@
-/* All styles handled inside components/App.js */
+html {
+  background: #07080d;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #07080d;
+  color: #f5f2ec;
+}

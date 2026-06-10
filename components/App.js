@@ -147,7 +147,7 @@ hr.div{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:22px 0;}
 .spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--gold);animation:spin .7s linear infinite;flex-shrink:0;}
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(4,5,10,0.82);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;padding:0 28px;height:62px;}
 .nav-logo{display:flex;align-items:center;gap:10px;}
-.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#C8A96E,#E8C98E);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#04050A;font-family:var(--sans);box-shadow:0 0 0 1px rgba(200,169,110,0.35),0 0 14px rgba(200,169,110,0.18);}
+.nav-logo-mark{width:42px;height:34px;object-fit:contain;display:block;filter:drop-shadow(0 0 10px rgba(200,169,110,0.2));}
 .nav-logo-text{font-size:16px;font-weight:700;color:var(--t1);font-family:var(--sans);letter-spacing:-0.02em;}
 .nav-logo-text span{color:var(--gold);}
 .progress-bar-track{height:2px;background:rgba(255,255,255,0.05);position:relative;overflow:hidden;}
@@ -212,7 +212,7 @@ function Nav({user,onSignOut,onShowHistory,hasHistory}){
   return(
     <nav className="nav">
       <div className="nav-logo">
-        <div className="nav-logo-mark" style={{fontFamily:"Georgia,serif",fontStyle:"italic",fontSize:13,letterSpacing:"-0.04em"}}>EF</div>
+        <img className="nav-logo-mark" src="/estate-flow-logo.png" alt="Estate Flow"/>
         <span className="nav-logo-text">Estate Flow<span> AI</span></span>
       </div>
       <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:12}}>
@@ -996,17 +996,6 @@ export default function App(){
   const[selectedAudit,setSelectedAudit]=useState(null);
 
   // ── Hydration-safe style injection ──────────────────────────────────────────
-  useEffect(()=>{
-    if(typeof document==="undefined") return;
-    const existing=document.getElementById("ef-styles");
-    if(existing) return;
-    const el=document.createElement("style");
-    el.id="ef-styles";
-    el.textContent=STYLES;
-    document.head.appendChild(el);
-    return()=>{ /* keep styles across nav */ };
-  },[]);
-
   const reg=getRegion(fd?.region||"uk");
   const sym=reg.sym;
   const currency=reg.currency;
@@ -1046,6 +1035,7 @@ export default function App(){
 
   return(
     <>
+      <style id="ef-styles" dangerouslySetInnerHTML={{__html:STYLES}}/>
       <div className="bg-fixed"/>
       <div className="bg-overlay"/>
       <div className="bg-grain"/>
