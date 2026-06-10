@@ -649,9 +649,10 @@ function Analyzing(){
 
 // ─── Report Components ────────────────────────────────────────────────────────
 function RiskMeter({score}){
-  const col=score>=68?"#10b981":score>=42?"#f59e0b":"#ef4444";
-  const lbl=score>=68?"Moderate":score>=42?"At Risk":"Critical";
-  const r=52,c=2*Math.PI*r,off=c-(score/100)*c;
+  const safeScore=Math.max(0,Math.min(100,Number(score)||0));
+  const col=safeScore>=68?"#10b981":safeScore>=42?"#f59e0b":"#ef4444";
+  const lbl=safeScore>=68?"Moderate":safeScore>=42?"At Risk":"Critical";
+  const r=52;
   const cx=100,cy=90;
   const toRad=deg=>deg*Math.PI/180;
   const arc=(s,e,rad)=>{
@@ -659,7 +660,7 @@ function RiskMeter({score}){
     const ex=cx+rad*Math.cos(toRad(e)),ey=cy+rad*Math.sin(toRad(e));
     return `M ${sx} ${sy} A ${rad} ${rad} 0 0 1 ${ex} ${ey}`;
   };
-  const fillEnd=-180+((score/100)*180);
+  const gaugeAngle=-180+((safeScore/100)*180);
   return(
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10}}>
       <div style={{position:"relative"}}>
@@ -668,14 +669,14 @@ function RiskMeter({score}){
           <path d={arc(-180,-120,r)} fill="none" stroke="rgba(239,68,68,0.18)" strokeWidth="10" strokeLinecap="round"/>
           <path d={arc(-120,-60,r)} fill="none" stroke="rgba(245,158,11,0.18)" strokeWidth="10" strokeLinecap="round"/>
           <path d={arc(-60,0,r)} fill="none" stroke="rgba(16,185,129,0.18)" strokeWidth="10" strokeLinecap="round"/>
-          <path d={arc(-180,Math.min(fillEnd,-0.1),r)} fill="none" stroke={col} strokeWidth="10" strokeLinecap="round" style={{filter:`drop-shadow(0 0 6px ${col}88)`,transition:"all 1.4s cubic-bezier(0.16,1,0.3,1)"}}/>
+          <path d={arc(-180,Math.min(gaugeAngle,-0.1),r)} fill="none" stroke={col} strokeWidth="10" strokeLinecap="round" style={{filter:`drop-shadow(0 0 6px ${col}88)`,transition:"all 1.4s cubic-bezier(0.16,1,0.3,1)"}}/>
           <g transform={`translate(${cx},${cy})`}>
-            <g transform={`rotate(${-90+(score/100)*180})`} style={{transition:"transform 1.4s cubic-bezier(0.16,1,0.3,1)"}}>
+            <g transform={`rotate(${gaugeAngle})`} style={{transition:"transform 1.4s cubic-bezier(0.16,1,0.3,1)"}}>
               <line x1="0" y1="0" x2={r-16} y2="0" stroke={col} strokeWidth="2.5" strokeLinecap="round" style={{filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.6))"}}/>
               <circle cx="0" cy="0" r="5" fill={col} style={{filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.5))"}}/>
             </g>
           </g>
-          <text x={cx} y={cy-8} textAnchor="middle" fill="#F5F2EC" fontSize="24" fontWeight="700" fontFamily="'JetBrains Mono',monospace">{score}</text>
+          <text x={cx} y={cy-8} textAnchor="middle" fill="#F5F2EC" fontSize="24" fontWeight="700" fontFamily="'JetBrains Mono',monospace">{safeScore}</text>
           <text x={cx} y={cy+6} textAnchor="middle" fill={col} fontSize="10" fontFamily="var(--sans)">/100</text>
         </svg>
       </div>
