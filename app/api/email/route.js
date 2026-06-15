@@ -5,7 +5,8 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-const MASTER_EMAIL = process.env.MASTER_EMAIL; // your admin email
+const MASTER_EMAIL = process.env.MASTER_EMAIL;
+const PARTNER_EMAIL = process.env.PARTNER_EMAIL; // white-label partner
 
 function buildEmailHTML({ lead, formData, aiReport, score, currency, fmt }) {
   const bizLabel = {
@@ -193,22 +194,22 @@ export async function POST(req) {
       }
     }
 
-    // 2. Copy to master email
-    if (MASTER_EMAIL) {
-      try {
-        await transporter.sendMail({
-          from:    `"Estate Flow AI" <${process.env.SMTP_USER}>`,
-          to:      MASTER_EMAIL,
-          subject: `[NEW AUDIT] ${lead?.name || "Anonymous"} · ${lead?.email || ""} · Score ${score}/100`,
-          html:    buildMasterEmailHTML({ lead, formData, aiReport, score, currency }),
-        });
-        results.push({ to: MASTER_EMAIL, sent: true });
-      } catch (e) {
-        console.error("Master email error:", e);
-        results.push({ to: MASTER_EMAIL, sent: false, error: e.message });
-      }
-    }
-
+    // 2. Copy to master + partner email
+const adminRecipients = [MASTER_EMAIL, PARTNER_EMAIL].filter(Boolean).join(", ");
+if (adminRecipients) {
+  try {
+    await transporter.sendMail({
+      from:    `"Estate Flow AI" <${process.env.SMTP_USER}>`,
+      to:      adminRecipients,
+      subject: `[NEW AUDIT] ${lead?.name || "Anonymous"} · ${lead?.email || ""} · Score ${score}/100`,
+      html:    buildMasterEmailHTML({ lead, formData, aiReport, score, currency }),
+    });
+    results.push({ to: adminRecipients, sent: true });
+  } catch (e) {
+    console.error("Master email error:", e);
+    results.push({ to: adminRecipients, sent: false, error: e.message });
+  }
+}
     return NextResponse.json({ success: true, results });
   } catch (err) {
     console.error("email route error:", err);
